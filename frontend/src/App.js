@@ -9,34 +9,38 @@ function App() {
 
   
   const handleUpload = async (url) => {
+    console.log('Sending URL:', url); 
+
     setLogs([]);
     setError(null);
-    setReport(null); 
-
+    setReport(null);
+  
     try {
-      
       const response = await fetch('http://localhost:5001/api/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url }), 
+        body: JSON.stringify({ url, timestamp: Date.now() }),
       });
-
-      
+  
+      const result = await response.json();  
+      console.log('API Response:', result);
+  
       if (response.ok) {
-        const result = await response.json();
-        console.log('Upload successful:', result);
-        setLogs(result.results || []);
+        
+       setLogs(result.results || []);
         setReport(result.report || {});
+        console.log('Logs:', result.results); 
+        console.log('Report:', result.report);
       } else {
-        const result = await response.json();
         setError(`Error: ${response.status} - ${result.error || 'Unknown error'}`);
       }
     } catch (error) {
       setError(`Request failed: ${error.message}`);
     }
   };
+  
 
   return (
     <div style={{ color: 'blue', fontFamily: 'Arial, sans-serif', padding: '20px', backgroundColor: '#8494ad' }}>
@@ -61,7 +65,7 @@ function App() {
 
       {report && (
         <div style={{ color: "black", marginTop: '20px', padding: '20px', backgroundColor: '#e6f7ff', borderRadius: '5px' }}>
-          <h2 style={{ color: 'blue' , fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Upload Status</h2>
+          <h2 style={{ color: 'blue' , fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Summary Report</h2>
           <p>Status: {report.successRate}% successful</p>
           <p>Total Requests: {report.total}</p>
           <p>Successful: {report.successful}</p>

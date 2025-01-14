@@ -14,6 +14,7 @@ let logs = [];
 
 app.post('/api/upload', async (req, res) => {
   const { url } = req.body;  
+  console.log('Received URL:', url);
   const openApiUrl = 'https://petstore.swagger.io/v2/swagger.json'; 
   const successResponses = [];  
   let successCount = 0;
