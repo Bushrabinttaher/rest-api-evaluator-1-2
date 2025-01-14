@@ -1,74 +1,67 @@
 import React, { useState } from 'react';
 import FileUploader from './components/FileUploader';
-import Report from './components/Report';
+
 
 function App() {
   const [report, setReport] = useState(null);
   const [logs, setLogs] = useState([]);
-  const [error, setError] = useState(null); // New state for capturing errors
+  const [error, setError] = useState(null); 
 
-  // Handle the upload of the URL (POST request)
+  
   const handleUpload = async (url) => {
+    setLogs([]);
+    setError(null);
+    setReport(null); 
+
     try {
-      // Send the URL to the backend API
+      
       const response = await fetch('http://localhost:5001/api/upload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Sending JSON data
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url }), // Send URL as JSON
+        body: JSON.stringify({ url }), 
       });
 
-      // Check if the response is OK (200-299 status)
+      
       if (response.ok) {
-        const result = await response.json(); // Parse the JSON response
-
+        const result = await response.json();
         console.log('Upload successful:', result);
-
-        // Assuming 'results' contains the logs and 'report' contains the summary
         setLogs(result.results || []);
         setReport(result.report || {});
-        setError(null); // Clear any previous error when the upload is successful
       } else {
-        // If not OK, display the error message (e.g., 400 or 500 status)
-        const result = await response.json(); // Get the error details from the response
+        const result = await response.json();
         setError(`Error: ${response.status} - ${result.error || 'Unknown error'}`);
-        console.error('Upload failed:', response.status, result);
-        setLogs([]); // Clear logs on error
-        setReport(null); // Clear report on error
       }
     } catch (error) {
-      console.error('Error during upload:', error);
-      setError(`Request failed: ${error.message}`); // Capture network errors or other issues
-      setLogs([]); // Clear logs on error
-      setReport(null); // Clear report on error
+      setError(`Request failed: ${error.message}`);
     }
   };
 
   return (
-    <div>
-      <h1>REST API Evaluator</h1>
+    <div style={{ color: 'blue', fontFamily: 'Arial, sans-serif', padding: '20px', backgroundColor: '#8494ad' }}>
+        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>REST API EVALUATOR</h1>
+
       <FileUploader onUpload={handleUpload} />
       
-      {/* Display the error message if there is an error */}
+      
       {error && (
-        <div style={{ color: 'red', marginTop: '20px' }}>
+        <div style={{ color: 'red', marginTop: '20px', padding: '10px', border: '1px solid red', backgroundColor: '#ffe6e6' }}>
           <h2>Error</h2>
           <p>{error}</p>
         </div>
       )}
 
-      {/* Display the Report if logs are available */}
       {logs && logs.length > 0 && (
-        <div>
-          <h2>Log Report</h2>
+        <div style={{ color: "black", marginTop: '10px', padding: '10px', backgroundColor: '#e6f7ff', borderRadius: '5px', marginTop: '15px' }}>
+          <h2 style={{ color: 'blue' , fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Log Report</h2>
           <pre>{JSON.stringify(logs, null, 2)}</pre>
         </div>
       )}
 
       {report && (
-        <div>
-          <h2>Upload Status</h2>
+        <div style={{ color: "black", marginTop: '20px', padding: '20px', backgroundColor: '#e6f7ff', borderRadius: '5px' }}>
+          <h2 style={{ color: 'blue' , fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Upload Status</h2>
           <p>Status: {report.successRate}% successful</p>
           <p>Total Requests: {report.total}</p>
           <p>Successful: {report.successful}</p>

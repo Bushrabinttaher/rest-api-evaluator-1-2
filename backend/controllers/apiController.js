@@ -1,5 +1,5 @@
 const axios = require('axios');
-const SwaggerParser = require('swagger-parser');
+const SwaggerParser = require("@apidevtools/swagger-parser");
 
 let logs = [];
 
@@ -42,9 +42,9 @@ const executeRequest = async (method, url, body = null) => {
 
 const uploadOASFile = async (req, res) => {
   try {
-    const { url } = req.body;  // Get URL from request body
-    const response = await axios.get(url);  // Fetch OAS file from the URL
-    const api = await SwaggerParser.validate(response.data);  // Parse and validate OAS
+    const { url } = req.body;  
+    const response = await axios.get(url);  
+    const api = await SwaggerParser.validate(response.data); 
 
     const endpoints = Object.entries(api.paths).reduce((acc, [path, methods]) => {
       for (const [method, details] of Object.entries(methods)) {
@@ -58,8 +58,8 @@ const uploadOASFile = async (req, res) => {
     const results = [];
     for (let endpoint of endpoints) {
       const { method, path } = endpoint;
-      const body = method === 'POST' ? { dummyData: 'example' } : null; // Simple dummy data
-      const response = await executeRequest(method.toLowerCase(), `https://api.example.com${path}`, body); // Example URL
+      const body = method === 'POST' ? { dummyData: 'example' } : null; 
+      const response = await executeRequest(method.toLowerCase(), `https://api.example.com${path}`, body); 
       logRequest(endpoint, response);
       results.push(response);
     }

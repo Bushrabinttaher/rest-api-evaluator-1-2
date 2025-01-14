@@ -1,11 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // import the correct client
+import ReactDOM from 'react-dom/client'; 
 import App from './App';
+import './styles.css';
 
-// Create a root element to mount the app
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Use root.render() instead of ReactDOM.render()
+
 root.render(
   <React.StrictMode>
     <App />

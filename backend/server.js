@@ -9,22 +9,22 @@ const cors = require('cors')
 app.use(cors());
 app.use(bodyParser.json());
 
-let logs = [];  // To store the logs of requests and responses
+let logs = [];  
 
-// Endpoint to handle file URL upload and process
+
 app.post('/api/upload', async (req, res) => {
-  const { url } = req.body;  // URL from the frontend
-  const openApiUrl = 'https://petstore.swagger.io/v2/swagger.json'; // OpenAPI Specification URL
-  const successResponses = [];  // Array to store successful response details
+  const { url } = req.body;  
+  const openApiUrl = 'https://petstore.swagger.io/v2/swagger.json'; 
+  const successResponses = [];  
   let successCount = 0;
   let failedCount = 0;
 
   try {
-    // Fetch OpenAPI Specification (OAS)
+    
     const oasResponse = await axios.get(openApiUrl);
     const oas = oasResponse.data;
 
-    // Extract all GET and POST endpoints from the OAS
+    
     const endpoints = [];
     for (const path in oas.paths) {
       for (const method in oas.paths[path]) {
@@ -34,7 +34,7 @@ app.post('/api/upload', async (req, res) => {
       }
     }
 
-    // Loop through each endpoint and make the request
+   
     for (const endpoint of endpoints) {
       const { method, path } = endpoint;
       const requestUrl = `https://petstore.swagger.io/v2${path}`;
@@ -42,12 +42,12 @@ app.post('/api/upload', async (req, res) => {
       try {
         let apiResponse;
         if (method === 'get') {
-          apiResponse = await axios.get(requestUrl);  // GET request
+          apiResponse = await axios.get(requestUrl);  
         } else if (method === 'post') {
-          apiResponse = await axios.post(requestUrl, {});  // POST request with empty body
+          apiResponse = await axios.post(requestUrl, {});  
         }
 
-        // Log the request, response, and status code
+        
         logs.push({
           method,
           url: requestUrl,
@@ -55,7 +55,7 @@ app.post('/api/upload', async (req, res) => {
           response: apiResponse.data,
         });
 
-        // Track success responses
+        
         if (apiResponse.status >= 200 && apiResponse.status < 300) {
           successResponses.push({ method, url: requestUrl, status: apiResponse.status });
           successCount++;
@@ -63,7 +63,7 @@ app.post('/api/upload', async (req, res) => {
           failedCount++;
         }
       } catch (error) {
-        // Log error responses
+        
         logs.push({
           method,
           url: requestUrl,
@@ -75,7 +75,6 @@ app.post('/api/upload', async (req, res) => {
       }
     }
 
-    // Prepare the summary report
     const totalRequests = successCount + failedCount;
     const successRate = (successCount / totalRequests) * 100;
 
@@ -86,7 +85,7 @@ app.post('/api/upload', async (req, res) => {
       failed: failedCount,
     };
 
-    // Return the logs and summary report as the response
+    
     res.json({ results: logs, report });
   } catch (error) {
     console.error('Error fetching OAS:', error);
